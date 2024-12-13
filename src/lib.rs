@@ -1,6 +1,9 @@
+mod dir;
 mod utils;
 
 use wasm_bindgen::prelude::*;
+
+pub struct 
 
 #[wasm_bindgen]
 extern "C" {
