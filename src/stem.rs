@@ -146,6 +146,7 @@ impl PorterStemmerTransformer {
     fn step2(word: &[u8]) -> Vec<u8> {
         let word_str = std::str::from_utf8(word).unwrap();
         let replacements = [
+            ("ization", "ize"),
             ("ational", "ate"),
             ("tional", "tion"),
             ("enci", "ence"),
@@ -156,7 +157,6 @@ impl PorterStemmerTransformer {
             ("entli", "ent"),
             ("eli", "e"),
             ("ousli", "ous"),
-            ("ization", "ize"),
             ("ation", "ate"),
             ("ator", "ate"),
             ("alism", "al"),
@@ -186,7 +186,6 @@ impl PorterStemmerTransformer {
         let replacements = [
             ("icate", "ic"),
             ("ative", ""),
-            ("alize", "al"),
             ("iciti", "ic"),
             ("ical", "ic"),
             ("ful", ""),
@@ -320,7 +319,7 @@ mod tests {
             ("meetings", "meet"),
             ("fishy", "fishi"),
             ("by", "by"),
-            // ("realization", "realiz"),
+            ("realization", "realiz"),
             ("ion", "ion"),
             ("able", "abl"),
             ("feare", "fear"),
