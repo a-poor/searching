@@ -57,14 +57,66 @@ impl TextTransformer for AlphanumericTransformer {
 
 pub struct PorterStemmerTransformer;
 
+impl PorterStemmerTransformer {
+    fn to_cv(&self, text: &str) -> Vec<char> {
+        // Split into characters
+        let chars = text.chars().collect::<Vec<_>>();
+        if chars.len() == 0 {
+            return Vec::new();
+        }
+
+        // Add the first character
+        let mut cv = Vec::new();
+        let mut prev = match chars[0] {
+            'a' | 'e' | 'i' | 'o' | 'u' => 'V',
+            _ => 'C',
+        };
+        cv.push(prev);
+
+        // Loop through the rest...
+        for c in chars.iter().skip(1) {
+            let curr = match c {
+                'a' | 'e' | 'i' | 'o' | 'u' => 'V',
+                _ => 'C',
+            };
+
+            if curr != prev {
+                cv.push(curr);
+            }
+
+            prev = curr;
+        }
+
+        // Done!
+        cv
+    }
+
+    fn measure(&self, text: &str) -> usize {
+        self.to_cv(text)
+            .iter()
+            .filter(|&c| *c == 'C')
+            .count()
+    }
+}
+
 impl TextTransformer for PorterStemmerTransformer {
     fn transform(&self, text: &str) -> String {
+        let mut output = text.to_string();
         // Step 1a: Simple suffix removal
         // - SSES -> SS
         // - IES -> I
         // - SS -> SS
         // - S -> (empty)
-        
+        if output.ends_with("sses") {
+            output.pop();
+            output.pop();
+        } else if output.ends_with("ies") {
+            output.pop();
+        } else if output.ends_with("ss") {
+            // Do nothing
+        } else if output.ends_with('s') {
+            output.pop();
+        }
 
         // Step 1b: Handle ED and ING
         // - (m>0) EED -> EE
@@ -77,6 +129,26 @@ impl TextTransformer for PorterStemmerTransformer {
         // - IZ -> IZE
         // - (*d and not (*L or *S or *Z)) -> single letter
         // - (m=1 and *o) -> E
+        let mut changed = false;
+        let has_vowel_minus_sfx = |text: &str, sfx: &str| text
+            .chars()
+            .collect::<Vec<_>>()[0..text.len()-sfx.len()]
+            .iter()
+            .any(|c| "aeiou".contains(*c));
+        if self.measure(&output) > 0 && output.ends_with("eed") {
+            output.pop();
+            output.pop();
+            changed = true;
+        } else if output.ends_with("ed") && has_vowel_minus_sfx(&output, "ed") {
+            output.pop();
+            output.pop();
+            changed = true;
+        } else if output.ends_with("ing") && has_vowel_minus_sfx(&output, "ing"){
+            output.pop();
+            output.pop();
+            output.pop();
+            changed = true;
+        }
 
         // Step 1c:
         // - (*v*) Y -> I (if stem contains a vowel, replace Y with I)
