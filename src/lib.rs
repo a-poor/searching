@@ -2,6 +2,8 @@ mod utils;
 mod tokenize;
 mod text_transform;
 mod stem;
+mod filter;
+
 use wasm_bindgen::prelude::*;
 
 

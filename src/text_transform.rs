@@ -7,6 +7,14 @@ pub trait TextTransformer {
     fn transform(&self, text: &str) -> String;
 }
 
+pub struct NoOpTransformer;
+
+impl TextTransformer for NoOpTransformer {
+    fn transform(&self, text: &str) -> String {
+        text.to_string()
+    }
+}
+
 /// A TextTransformer that converts all characters to lowercase.
 pub struct LowercaseTransformer;
 
@@ -16,22 +24,14 @@ impl TextTransformer for LowercaseTransformer {
     }
 }
 
-/// A TextTransformer that removes all non-ASCII characters
-pub struct AsciiFoldingTransformer;
-
-impl TextTransformer for AsciiFoldingTransformer {
-    fn transform(&self, text: &str) -> String {
-        text.chars()
-            .map(|c| {
-                if c.is_ascii() {
-                    c
-                } else {
-                    c.to_ascii_lowercase()
-                }
-            })
-            .collect()
-    }
-}
+// /// A TextTransformer that removes all non-ASCII characters
+// pub struct AsciiFoldingTransformer;
+//
+// impl TextTransformer for AsciiFoldingTransformer {
+//     fn transform(&self, text: &str) -> String {
+//         todo!();
+//     }
+// }
 
 /// A TextTransformer that removes punctuation characters.
 pub struct RemovePunctuationTransformer;
@@ -53,5 +53,5 @@ impl TextTransformer for AlphanumericTransformer {
             .filter(|c| c.is_alphanumeric())
             .collect()
     }
-}
+} 
 
