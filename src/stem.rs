@@ -1,4 +1,4 @@
-use crate::text_transform::TextTransformer;
+use crate::transform::TextTransformer;
 
 pub struct PorterStemmerTransformer;
 
